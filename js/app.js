@@ -10,6 +10,15 @@ cargarEventListener();
 function cargarEventListener(){
     // Agrega curso al carrito al hacer click en "Agregar Curso"
     listaCursos.addEventListener("click", agregarCurso);
+    
+    // Elimina curso al clickear la X
+    carrito.addEventListener("click", eliminarCurso);
+
+    // Vaciar carrito
+    vaciarCarritoBtn.addEventListener("click", () => {
+        articulosCarrito = [];
+        limpiarHTML();
+    });
 }
 
 // Funciones
@@ -31,9 +40,22 @@ function leerDatosCurso (curso){
         id: curso.querySelector('a').getAttribute('data-id'),
         cantidad: 1
     }
-    // se agrega al carrito
-    articulosCarrito = [...articulosCarrito, infoCurso]
-    console.log(articulosCarrito);
+    // revisa si el curso ya esta en el carrito
+    const existe = articulosCarrito.some(curso => curso.id === infoCurso.id)
+    if (existe){
+        const cursos = articulosCarrito.map(curso => {
+            if (curso.id === infoCurso.id){
+                curso.cantidad ++;
+                return curso;
+            } else {
+                return curso;
+            }
+        });
+        articulosCarrito = [...cursos];
+    } else {
+        // se agrega al carrito
+        articulosCarrito = [...articulosCarrito, infoCurso]
+    }
 
     carritoHTML();
 
@@ -70,5 +92,15 @@ function limpiarHTML(){
 
     while (contenedorCarrito.firstChild){
         contenedorCarrito.removeChild(contenedorCarrito.firstChild);
+    }
+}
+
+function eliminarCurso(e){
+    if (e.target.classList.contains('borrar-curso')){
+        const cursoId = e.target.getAttribute('data-id');
+        // elimina del arreglo por el data-id
+        articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoId);
+
+        carritoHTML();
     }
 }
